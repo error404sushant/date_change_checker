@@ -41,10 +41,10 @@ class _MyHomePageState extends State<MyHomePage> {
   //region State Variables
   /// Stores the current auto date time status result
   AutoDateTimeStatus? _status;
-  
+
   /// Indicates whether a check operation is in progress
   bool _isLoading = false;
-  
+
   /// Stores error message if any operation fails
   String? _errorMessage;
   //endregion
@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //region Date Change Checking Logic
   /// Checks if the device's date/time settings have been manually changed
-  /// 
+  ///
   /// This method calls the DateChangeChecker plugin to determine if
   /// automatic date/time is disabled or if manual changes were made.
   /// Updates the UI state based on the result or displays errors if any occur.
@@ -77,14 +77,14 @@ class _MyHomePageState extends State<MyHomePage> {
       // Call the plugin to check if date/time has been manually changed
       final isChanged = await DateChangeChecker.isDateTimeChanged();
       print('DEBUG: Date/time changed: $isChanged');
-      
+
       // Convert boolean to AutoDateTimeStatus for backward compatibility in the example
       // - If isChanged is true: automatic date/time is OFF or manual changes detected
       // - If isChanged is false: automatic date/time is ON and no manual changes
-      final status = isChanged 
-          ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF 
+      final status = isChanged
+          ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF
           : AutoDateTimeStatus.AUTO_DATE_TIME_ON;
-      
+
       setState(() {
         _status = status;
         _isLoading = false;
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //region UI Helper Methods
   /// Returns the appropriate color based on the current status
-  /// 
+  ///
   /// - Grey: Status unknown
   /// - Green: Auto date/time ON (no changes detected)
   /// - Red: Auto date/time OFF (changes detected)
@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Returns the appropriate icon based on the current status
-  /// 
+  ///
   /// - Question mark: Status unknown
   /// - Check circle: Auto date/time ON (no changes detected)
   /// - Error icon: Auto date/time OFF (changes detected)
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Returns the appropriate status text based on the current status
-  /// 
+  ///
   /// - Unknown: Status not determined yet
   /// - NOT DETECTED: No date/time changes found
   /// - DETECTED: Date/time changes found
@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Returns a detailed description of the current status
-  /// 
+  ///
   /// Provides more context about what the status means in terms of
   /// automatic date/time settings and potential manual changes
   String _getStatusDescription() {
@@ -154,12 +154,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return _status == AutoDateTimeStatus.AUTO_DATE_TIME_ON
         ? 'Automatic date/time is enabled - no manual changes detected.'
         : 'Automatic date/time is disabled - manual changes may have been made.';
-  //endregion
+    //endregion
   }
 
   //region UI Build Method
   /// Builds the main UI of the application
-  /// 
+  ///
   /// Creates a scaffold with:
   /// - AppBar with the title
   /// - Refresh button to manually check date/time status
@@ -272,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  //endregion
+    //endregion
   }
 }
 //endregion

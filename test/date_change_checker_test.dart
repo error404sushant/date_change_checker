@@ -18,11 +18,12 @@ void main() {
   });
 
   group('DateChangeChecker', () {
-    test('isDateTimeChanged returns false when automatic date/time is enabled', () async {
+    test('isDateTimeChanged returns false when automatic date/time is enabled',
+        () async {
       // Arrange
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'isDateTimeChanged' || 
+        if (methodCall.method == 'isDateTimeChanged' ||
             methodCall.method == 'isAutoDateTimeEnabled') {
           return true; // Auto time is enabled
         }
@@ -36,11 +37,12 @@ void main() {
       expect(result, false); // Date time is not changed when auto is enabled
     });
 
-    test('isDateTimeChanged returns true when automatic date/time is disabled', () async {
+    test('isDateTimeChanged returns true when automatic date/time is disabled',
+        () async {
       // Arrange
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'isDateTimeChanged' || 
+        if (methodCall.method == 'isDateTimeChanged' ||
             methodCall.method == 'isAutoDateTimeEnabled') {
           return false; // Auto time is disabled
         }
@@ -54,7 +56,9 @@ void main() {
       expect(result, true); // Date time is changed when auto is disabled
     });
 
-    test('checkAutoDateTimeStatus throws PlatformException when native throws error', () async {
+    test(
+        'checkAutoDateTimeStatus throws PlatformException when native throws error',
+        () async {
       // Arrange
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -94,13 +98,17 @@ void main() {
   group('AutoDateTimeStatus', () {
     test('enum has correct values', () {
       expect(AutoDateTimeStatus.values.length, 2);
-      expect(AutoDateTimeStatus.values, contains(AutoDateTimeStatus.AUTO_DATE_TIME_ON));
-      expect(AutoDateTimeStatus.values, contains(AutoDateTimeStatus.AUTO_DATE_TIME_OFF));
+      expect(AutoDateTimeStatus.values,
+          contains(AutoDateTimeStatus.AUTO_DATE_TIME_ON));
+      expect(AutoDateTimeStatus.values,
+          contains(AutoDateTimeStatus.AUTO_DATE_TIME_OFF));
     });
 
     test('enum values have correct string representation', () {
-      expect(AutoDateTimeStatus.AUTO_DATE_TIME_ON.toString(), 'AutoDateTimeStatus.AUTO_DATE_TIME_ON');
-      expect(AutoDateTimeStatus.AUTO_DATE_TIME_OFF.toString(), 'AutoDateTimeStatus.AUTO_DATE_TIME_OFF');
+      expect(AutoDateTimeStatus.AUTO_DATE_TIME_ON.toString(),
+          'AutoDateTimeStatus.AUTO_DATE_TIME_ON');
+      expect(AutoDateTimeStatus.AUTO_DATE_TIME_OFF.toString(),
+          'AutoDateTimeStatus.AUTO_DATE_TIME_OFF');
     });
   });
 }
