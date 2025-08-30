@@ -1,0 +1,22 @@
+PODS:
+  - date_change_checker (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - date_change_checker (from `.symlinks/plugins/date_change_checker/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  date_change_checker:
+    :path: ".symlinks/plugins/date_change_checker/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  date_change_checker: 108f6f9ec318e8515d187c10738548213bfef21d
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+
+COCOAPODS: 1.16.2

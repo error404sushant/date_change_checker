@@ -1,0 +1,29 @@
+name: date_change_checker
+description: A cross-platform Flutter package that detects whether the device's automatic date/time setting is disabled.
+version: 1.0.1
+homepage: https://github.com/sushantdev-git/date_change_checker
+repository: https://github.com/sushantdev-git/date_change_checker
+issue_tracker: https://github.com/sushantdev-git/date_change_checker/issues
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ntp: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.date_change_checker
+        pluginClass: DateChangeCheckerPlugin
+      ios:
+        pluginClass: DateChangeCheckerPlugin
