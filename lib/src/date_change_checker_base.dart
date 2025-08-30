@@ -383,7 +383,10 @@ class DateChangeChecker {
       developer.log('Starting comprehensive time analysis', name: 'DateChangeChecker');
       
       // Check automatic date/time status
-      final AutoDateTimeStatus autoStatus = await checkAutoDateTimeStatus();
+      final bool isChanged = await isDateTimeChanged();
+      final AutoDateTimeStatus autoStatus = isChanged 
+          ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF 
+          : AutoDateTimeStatus.AUTO_DATE_TIME_ON;
       
       // Perform time synchronization check
       final TimeSyncResult syncResult = await detectTimeSyncIssues(
@@ -406,7 +409,6 @@ class DateChangeChecker {
     }
   }
   //endregion
-}
 }
 
 //region Result Classes
