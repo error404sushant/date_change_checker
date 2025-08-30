@@ -4,25 +4,51 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 import 'auto_date_time_status.dart';
 
+//region Date Change Checker
 /// Main class for checking automatic date/time settings and time synchronization across platforms
+/// 
+/// This class provides methods to detect if a device's date/time settings have been
+/// manually changed, which is useful for security-sensitive applications that need
+/// to prevent time-based attacks or ensure accurate timestamps.
 class DateChangeChecker {
+  //region Constants
+  /// Method channel for native platform communication
   static const MethodChannel _channel = MethodChannel('date_change_checker');
   
   /// Default time discrepancy threshold in milliseconds (30 seconds)
+  /// Used to determine if device time is significantly different from NTP time
   static const int defaultTimeThreshold = 30000;
   
   /// Default NTP server for time synchronization
+  /// Used as the source of truth for accurate time
   static const String defaultNtpServer = 'pool.ntp.org';
+  //endregion
   
+  //region Core Functionality
   /// Checks if the device's date/time has been changed (not using automatic settings)
   /// 
-  /// For iOS: Uses NTP time comparison to detect if date/time has been changed
-  /// For Android: Uses native method channel implementation
+  /// This is the primary method for detecting date/time changes across platforms:
+  /// - For iOS: Uses NTP time comparison to detect if date/time has been changed
+  /// - For Android: Uses native method channel implementation that checks system settings
   /// 
   /// Returns [true] if date/time has been changed (automatic date/time is OFF)
   /// Returns [false] if date/time has not been changed (automatic date/time is ON)
   /// 
   /// Throws [PlatformException] if platform is not supported or if an error occurs
+  /// 
+  /// Example usage:
+  /// ```dart
+  /// try {
+  ///   bool isChanged = await DateChangeChecker.isDateTimeChanged();
+  ///   if (isChanged) {
+  ///     // Handle case where date/time has been manually changed
+  ///   } else {
+  ///     // Date/time is using automatic settings
+  ///   }
+  /// } catch (e) {
+  ///   // Handle errors
+  /// }
+  /// ```
   static Future<bool> isDateTimeChanged() async {
     try {
       if (Platform.isIOS) {
@@ -32,6 +58,7 @@ class DateChangeChecker {
         return status == AutoDateTimeStatus.AUTO_DATE_TIME_OFF;
       } else if (Platform.isAndroid) {
         // Android: Use the isDateTimeChanged method directly
+        // This calls the native Android implementation that checks system settings
         final bool isChanged = await _channel.invokeMethod('isDateTimeChanged');
         return isChanged;
       } else {
@@ -53,9 +80,21 @@ class DateChangeChecker {
       );
     }
   }
+  //endregion
 
+  //region Platform-Specific Implementations
   /// iOS-specific implementation for checking automatic date/time status
-  /// Uses NTP time comparison to detect if automatic date/time is enabled
+  /// 
+  /// This method uses NTP time comparison to detect if automatic date/time is enabled:
+  /// 1. Gets the current device time
+  /// 2. Fetches accurate time from an NTP server
+  /// 3. Compares the difference between these times
+  /// 4. If the difference is within the threshold, assumes automatic time is enabled
+  /// 
+  /// Parameters:
+  /// - [thresholdMs]: Maximum allowed time difference in milliseconds (default: 30000ms/30s)
+  /// - [ntpServer]: NTP server to use for time synchronization (default: 'pool.ntp.org')
+  /// - [timeout]: Connection timeout in milliseconds (default: 5000ms/5s)
   /// 
   /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_ON] if time is synchronized (auto enabled)
   /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_OFF] if time is not synchronized (auto disabled)
@@ -105,10 +144,12 @@ class DateChangeChecker {
     }
   }
   
+  //region Advanced Detection Methods
   /// Performs comprehensive date and time change detection (iOS only)
   /// 
   /// This method detects whether the date, time, or both have been modified
   /// and provides detailed information about the changes and auto date/time status.
+  /// It offers more granular information than the basic isDateTimeChanged method.
   /// 
   /// Returns a [DateTimeChangeResult] with comprehensive change information
   /// Throws [PlatformException] if platform is not supported or if an error occurs
@@ -129,7 +170,8 @@ class DateChangeChecker {
   /// Detects comprehensive date/time changes and automatically shows notifications (iOS only)
   /// 
   /// This method combines detection with user notifications for better UX.
-  /// It will show appropriate notifications based on the type of changes detected.
+  /// It will show appropriate notifications based on the type of changes detected,
+  /// which can improve user awareness of potential security issues.
   /// 
   /// Returns a [DateTimeChangeResult] with comprehensive change information
   /// Throws [PlatformException] if platform is not supported or if an error occurs
@@ -150,7 +192,8 @@ class DateChangeChecker {
   /// Detects if only the date has been changed while time remains the same (iOS only)
   /// 
   /// This is useful for detecting when users manually change the date
-  /// without modifying the time.
+  /// without modifying the time, which is a common pattern in certain
+  /// types of time-based fraud or manipulation.
   /// 
   /// Returns true if date-only change is detected, false otherwise
   /// Throws [PlatformException] if platform is not supported or if an error occurs
@@ -166,13 +209,19 @@ class DateChangeChecker {
       );
     }
   }
+  //endregion
   
+  //region Utility Methods
   /// Fetches the current time from an NTP server
   /// 
-  /// [ntpServer] - The NTP server to query (defaults to 'pool.ntp.org')
-  /// [timeout] - Connection timeout in milliseconds (defaults to 5000ms)
+  /// This method connects to an NTP server to get the accurate current time,
+  /// which is used as the source of truth for time comparisons.
   /// 
-  /// Returns the NTP time as a [DateTime] object
+  /// Parameters:
+  /// - [ntpServer]: The NTP server to query (defaults to 'pool.ntp.org')
+  /// - [timeout]: Connection timeout in milliseconds (defaults to 5000ms)
+  /// 
+  /// Returns the NTP time as a [DateTime] object in UTC
   /// Throws [Exception] if NTP query fails
   static Future<DateTime> fetchNtpTime({
     String ntpServer = defaultNtpServer,
@@ -193,12 +242,14 @@ class DateChangeChecker {
       throw Exception('NTP time fetch failed: $e');
     }
   }
+  //endregion
   
   /// Compares device time with NTP server time to detect time synchronization issues
   /// 
-  /// [thresholdMs] - Time difference threshold in milliseconds (defaults to 30 seconds)
-  /// [ntpServer] - The NTP server to query (defaults to 'pool.ntp.org')
-  /// [timeout] - Connection timeout in milliseconds (defaults to 5000ms)
+  /// Parameters:
+  /// - [thresholdMs]: Time difference threshold in milliseconds (defaults to 30 seconds)
+  /// - [ntpServer]: The NTP server to query (defaults to 'pool.ntp.org')
+  /// - [timeout]: Connection timeout in milliseconds (defaults to 5000ms)
   /// 
   /// Returns a [TimeSyncResult] containing comparison details
   static Future<TimeSyncResult> detectTimeSyncIssues({
@@ -277,7 +328,9 @@ class DateChangeChecker {
       rethrow;
     }
   }
+  //endregion
   
+  //region Utility Methods
   /// Gets the current device time
   /// 
   /// Returns the device's current [DateTime]
@@ -293,7 +346,7 @@ class DateChangeChecker {
   /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_OFF] if automatic date/time is disabled
   /// 
   /// Throws [PlatformException] if platform is not supported or if an error occurs
-  @Deprecated('Use isDateTimeChanged() instead')
+  @Deprecated('Use isDateTimeChanged() instead. Will be removed in a future version.')
   static Future<AutoDateTimeStatus> checkAutoDateTimeStatus() async {
     try {
       // Call the new method and convert the result
@@ -304,10 +357,15 @@ class DateChangeChecker {
           ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF 
           : AutoDateTimeStatus.AUTO_DATE_TIME_ON;
     } catch (e) {
-      rethrow;
+      throw PlatformException(
+        code: 'CHECK_FAILED',
+        message: 'Failed to check auto date/time status: $e',
+      );
     }
   }
+  //endregion
   
+  //region Advanced Analysis Methods
   /// Comprehensive time analysis combining automatic date/time status check
   /// and NTP-based time synchronization detection
   /// 
@@ -347,8 +405,11 @@ class DateChangeChecker {
       rethrow;
     }
   }
+  //endregion
+}
 }
 
+//region Result Classes
 /// Result of time synchronization comparison between device and NTP server
 class TimeSyncResult {
   /// Device's current time
@@ -426,6 +487,9 @@ class ComprehensiveTimeAnalysis {
   }
 }
 
+//endregion
+
+//region Date Change Checker Result Classes
 /// Types of date/time changes that can be detected
 enum DateTimeChangeType {
   /// No changes detected
@@ -512,3 +576,4 @@ class DateTimeChangeResult {
            'timeChanged: $hasTimeChanged, method: $detectionMethod)';
   }
 }
+//endregion

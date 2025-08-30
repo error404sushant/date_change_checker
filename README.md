@@ -34,7 +34,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  date_change_checker: ^1.0.0
+  date_change_checker: ^2.0.0
 ```
 
 Then run:
@@ -71,15 +71,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:date_change_checker/date_change_checker.dart';
 
+//region Date Time Status Widget
 class DateTimeStatusWidget extends StatefulWidget {
   @override
   _DateTimeStatusWidgetState createState() => _DateTimeStatusWidgetState();
 }
 
 class _DateTimeStatusWidgetState extends State<DateTimeStatusWidget> {
+  //region Properties
   AutoDateTimeStatus? _status;
   bool _isLoading = false;
   String? _errorMessage;
+  //endregion
 
   @override
   void initState() {
@@ -87,6 +90,7 @@ class _DateTimeStatusWidgetState extends State<DateTimeStatusWidget> {
     _checkStatus();
   }
 
+  //region Status Check Methods
   Future<void> _checkStatus() async {
     setState(() {
       _isLoading = true;
@@ -110,7 +114,9 @@ class _DateTimeStatusWidgetState extends State<DateTimeStatusWidget> {
       });
     }
   }
+  //endregion
 
+  //region Build Method
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -137,7 +143,9 @@ class _DateTimeStatusWidgetState extends State<DateTimeStatusWidget> {
       ],
     );
   }
+  //endregion
 }
+//endregion
 ```
 
 ## API Reference
