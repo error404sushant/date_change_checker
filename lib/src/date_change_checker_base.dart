@@ -14,26 +14,26 @@ class DateChangeChecker {
   /// Default NTP server for time synchronization
   static const String defaultNtpServer = 'pool.ntp.org';
   
-  /// Checks if automatic date/time is enabled on the device
+  /// Checks if the device's date/time has been changed (not using automatic settings)
   /// 
-  /// For iOS: Uses NTP time comparison to detect if automatic date/time is enabled
+  /// For iOS: Uses NTP time comparison to detect if date/time has been changed
   /// For Android: Uses native method channel implementation
   /// 
-  /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_ON] if enabled
-  /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_OFF] if disabled
+  /// Returns [true] if date/time has been changed (automatic date/time is OFF)
+  /// Returns [false] if date/time has not been changed (automatic date/time is ON)
   /// 
   /// Throws [PlatformException] if platform is not supported or if an error occurs
-  static Future<AutoDateTimeStatus> checkAutoDateTimeStatus() async {
+  static Future<bool> isDateTimeChanged() async {
     try {
       if (Platform.isIOS) {
         // iOS: Use NTP-based time synchronization check
-        return await _checkAutoDateTimeStatusIOS();
+        final status = await _checkAutoDateTimeStatusIOS();
+        // Return true if date/time has been changed (AUTO_DATE_TIME_OFF)
+        return status == AutoDateTimeStatus.AUTO_DATE_TIME_OFF;
       } else if (Platform.isAndroid) {
-        // Android: Use existing method channel implementation
-        final bool result = await _channel.invokeMethod('isAutoDateTimeEnabled');
-        return result 
-            ? AutoDateTimeStatus.AUTO_DATE_TIME_ON 
-            : AutoDateTimeStatus.AUTO_DATE_TIME_OFF;
+        // Android: Use the isDateTimeChanged method directly
+        final bool isChanged = await _channel.invokeMethod('isDateTimeChanged');
+        return isChanged;
       } else {
         throw PlatformException(
           code: 'UNSUPPORTED_PLATFORM',
@@ -283,6 +283,29 @@ class DateChangeChecker {
   /// Returns the device's current [DateTime]
   static DateTime getDeviceTime() {
     return DateTime.now();
+  }
+  
+  /// DEPRECATED: Use isDateTimeChanged() instead.
+  /// 
+  /// Checks if automatic date/time setting is enabled on the device
+  /// 
+  /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_ON] if automatic date/time is enabled
+  /// Returns [AutoDateTimeStatus.AUTO_DATE_TIME_OFF] if automatic date/time is disabled
+  /// 
+  /// Throws [PlatformException] if platform is not supported or if an error occurs
+  @Deprecated('Use isDateTimeChanged() instead')
+  static Future<AutoDateTimeStatus> checkAutoDateTimeStatus() async {
+    try {
+      // Call the new method and convert the result
+      final bool isChanged = await isDateTimeChanged();
+      
+      // Convert boolean to AutoDateTimeStatus
+      return isChanged 
+          ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF 
+          : AutoDateTimeStatus.AUTO_DATE_TIME_ON;
+    } catch (e) {
+      rethrow;
+    }
   }
   
   /// Comprehensive time analysis combining automatic date/time status check

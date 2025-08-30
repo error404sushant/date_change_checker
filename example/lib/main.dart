@@ -51,9 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
     print('DEBUG: Loading state set to true');
 
     try {
-      print('DEBUG: Calling DateChangeChecker.checkAutoDateTimeStatus()');
-      final status = await DateChangeChecker.checkAutoDateTimeStatus();
-      print('DEBUG: Received status: $status');
+      print('DEBUG: Calling DateChangeChecker.isDateTimeChanged()');
+      final isChanged = await DateChangeChecker.isDateTimeChanged();
+      print('DEBUG: Date/time changed: $isChanged');
+      // Convert boolean to AutoDateTimeStatus for backward compatibility in the example
+      final status = isChanged 
+          ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF 
+          : AutoDateTimeStatus.AUTO_DATE_TIME_ON;
       setState(() {
         _status = status;
         _isLoading = false;

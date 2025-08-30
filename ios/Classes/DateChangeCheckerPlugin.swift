@@ -22,7 +22,23 @@ public class DateChangeCheckerPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    case "isDateTimeChanged":
+      AutoDateTimeDetector.isAutoDateTimeEnabled { isEnabled in
+        DispatchQueue.main.async {
+          // Return !isEnabled to indicate if date/time has been changed
+          result(!isEnabled)
+        }
+      }
+      
     case "isAutoDateTimeEnabled":
+      AutoDateTimeDetector.isAutoDateTimeEnabled { isEnabled in
+        DispatchQueue.main.async {
+          result(isEnabled)
+        }
+      }
+      
+    // Keep the old method for backward compatibility
+    case "checkAutoDateTimeStatus":
       AutoDateTimeDetector.isAutoDateTimeEnabled { isEnabled in
         DispatchQueue.main.async {
           result(isEnabled)

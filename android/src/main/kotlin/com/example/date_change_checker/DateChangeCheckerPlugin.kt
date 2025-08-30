@@ -24,7 +24,16 @@ class DateChangeCheckerPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
-      "checkAutoDateTimeStatus" -> {
+      "isDateTimeChanged" -> {
+        try {
+          val isAutoEnabled = AutoDateTimeDetector.isAutoDateTimeEnabled(context)
+          // Return !isAutoEnabled to indicate if date/time has been changed
+          result.success(!isAutoEnabled)
+        } catch (e: Exception) {
+          result.error("DETECTION_ERROR", "Failed to detect date/time change: ${e.message}", null)
+        }
+      }
+      "isAutoDateTimeEnabled" -> {
         try {
           val isEnabled = AutoDateTimeDetector.isAutoDateTimeEnabled(context)
           result.success(isEnabled)
@@ -32,7 +41,8 @@ class DateChangeCheckerPlugin: FlutterPlugin, MethodCallHandler {
           result.error("DETECTION_ERROR", "Failed to detect auto date/time status: ${e.message}", null)
         }
       }
-      "isAutoDateTimeEnabled" -> {
+      // Keep the old method for backward compatibility
+      "checkAutoDateTimeStatus" -> {
         try {
           val isEnabled = AutoDateTimeDetector.isAutoDateTimeEnabled(context)
           result.success(isEnabled)

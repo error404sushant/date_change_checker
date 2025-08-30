@@ -18,38 +18,40 @@ void main() {
   });
 
   group('DateChangeChecker', () {
-    test('checkAutoDateTimeStatus returns AUTO_DATE_TIME_ON when native returns true', () async {
+    test('isDateTimeChanged returns false when automatic date/time is enabled', () async {
       // Arrange
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'checkAutoDateTimeStatus') {
-          return true;
+        if (methodCall.method == 'isDateTimeChanged' || 
+            methodCall.method == 'isAutoDateTimeEnabled') {
+          return true; // Auto time is enabled
         }
         return null;
       });
 
       // Act
-      final result = await DateChangeChecker.checkAutoDateTimeStatus();
+      final result = await DateChangeChecker.isDateTimeChanged();
 
       // Assert
-      expect(result, AutoDateTimeStatus.AUTO_DATE_TIME_ON);
+      expect(result, false); // Date time is not changed when auto is enabled
     });
 
-    test('checkAutoDateTimeStatus returns AUTO_DATE_TIME_OFF when native returns false', () async {
+    test('isDateTimeChanged returns true when automatic date/time is disabled', () async {
       // Arrange
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'checkAutoDateTimeStatus') {
-          return false;
+        if (methodCall.method == 'isDateTimeChanged' || 
+            methodCall.method == 'isAutoDateTimeEnabled') {
+          return false; // Auto time is disabled
         }
         return null;
       });
 
       // Act
-      final result = await DateChangeChecker.checkAutoDateTimeStatus();
+      final result = await DateChangeChecker.isDateTimeChanged();
 
       // Assert
-      expect(result, AutoDateTimeStatus.AUTO_DATE_TIME_OFF);
+      expect(result, true); // Date time is changed when auto is disabled
     });
 
     test('checkAutoDateTimeStatus throws PlatformException when native throws error', () async {

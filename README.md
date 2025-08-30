@@ -2,6 +2,16 @@
 
 A cross-platform Flutter package that detects whether the device's automatic date/time setting is disabled, providing unified functionality for both Android and iOS platforms.
 
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue.svg)](https://github.com/error404sushant/date_change_checker)
+
+## Demo
+
+### iOS Demo
+![iOS Demo](https://raw.githubusercontent.com/error404sushant/date_change_checker/refs/heads/main/ios.gif)
+
+### Android Demo
+![Android Demo](https://raw.githubusercontent.com/error404sushant/date_change_checker/refs/heads/main/android.gif)
+
 ## Features
 
 - ✅ Cross-platform support (Android & iOS)
@@ -40,14 +50,14 @@ flutter pub get
 ```dart
 import 'package:date_change_checker/date_change_checker.dart';
 
-// Check if automatic date/time is enabled
+// Check if date/time has been changed (automatic date/time is disabled)
 try {
-  final status = await DateChangeChecker.checkAutoDateTimeStatus();
+  final isChanged = await DateChangeChecker.isDateTimeChanged();
   
-  if (status == AutoDateTimeStatus.AUTO_DATE_TIME_ON) {
-    print('Automatic date/time is enabled');
+  if (isChanged) {
+    print('Date/time has been changed (automatic date/time is disabled)');
   } else {
-    print('Automatic date/time is disabled');
+    print('Date/time has not been changed (automatic date/time is enabled)');
   }
 } on PlatformException catch (e) {
   print('Error: ${e.message}');
@@ -84,7 +94,11 @@ class _DateTimeStatusWidgetState extends State<DateTimeStatusWidget> {
     });
 
     try {
-      final status = await DateChangeChecker.checkAutoDateTimeStatus();
+      final isChanged = await DateChangeChecker.isDateTimeChanged();
+      // Convert to status for backward compatibility
+      final status = isChanged 
+          ? AutoDateTimeStatus.AUTO_DATE_TIME_OFF 
+          : AutoDateTimeStatus.AUTO_DATE_TIME_ON;
       setState(() {
         _status = status;
         _isLoading = false;
@@ -134,11 +148,25 @@ Main class for checking automatic date/time settings.
 
 #### Methods
 
-##### `checkAutoDateTimeStatus()`
+##### `isDateTimeChanged()`
+
+```dart
+static Future<bool> isDateTimeChanged()
+```
+
+Checks if the device's date/time has been changed (automatic date/time is disabled).
+
+**Returns:**
+- `true` if date/time has been changed (automatic date/time is disabled)
+- `false` if date/time has not been changed (automatic date/time is enabled)
+
+##### `checkAutoDateTimeStatus()` (Deprecated)
 
 ```dart
 static Future<AutoDateTimeStatus> checkAutoDateTimeStatus()
 ```
+
+Deprecated: Use `isDateTimeChanged()` instead.
 
 Checks if automatic date/time is enabled on the device.
 
@@ -209,7 +237,7 @@ The example app demonstrates:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request on [GitHub](https://github.com/error404sushant/date_change_checker).
 
 ## License
 
